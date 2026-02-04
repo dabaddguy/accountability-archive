@@ -1,0 +1,263 @@
+{
+  "lastUpdated": "2026-02-03T12:00:00Z",
+  "version": "1.0",
+  "totalCases": 13,
+  
+  "cases": [
+    {
+      "id": 1,
+      "name": "Jeffrey Epstein",
+      "category": "billionaire",
+      "position": "Financier",
+      "status": "convicted",
+      "year": "2008, 2019",
+      "charges": ["Sex trafficking of minors", "Conspiracy to commit sex trafficking"],
+      "penalCodes": ["18 U.S.C. § 1591", "18 U.S.C. § 1594"],
+      "description": "Federal prosecution for sex trafficking ring involving minors across multiple states. Initial 2008 conviction resulted in controversial plea deal. 2019 federal indictment for additional charges.",
+      "sentence": "2008: 18 months (served 13). 2019: Died in custody awaiting trial.",
+      "settlement": "$121M+ to victims fund",
+      "jurisdiction": "Southern District of New York, Palm Beach County",
+      "sources": [
+        "SDNY Case No. 19-cr-490",
+        "Department of Justice Press Release 2019",
+        "Court Records - Palm Beach County"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Ghislaine Maxwell",
+      "category": "other",
+      "position": "Socialite / Epstein Associate",
+      "status": "convicted",
+      "year": "2021",
+      "charges": ["Sex trafficking of minors", "Conspiracy", "Transportation of minors for illegal sexual activity"],
+      "penalCodes": ["18 U.S.C. § 1591", "18 U.S.C. § 2422", "18 U.S.C. § 2423"],
+      "description": "Convicted of recruiting and grooming underage girls for sexual abuse by Jeffrey Epstein between 1994 and 2004.",
+      "sentence": "20 years federal prison (currently serving)",
+      "settlement": "N/A - Criminal case only",
+      "jurisdiction": "Southern District of New York",
+      "sources": [
+        "SDNY Case No. 20-cr-330",
+        "Trial Verdict December 2021",
+        "Sentencing Transcript June 2022"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Harvey Weinstein",
+      "category": "billionaire",
+      "position": "Film Producer / Co-founder Miramax",
+      "status": "convicted",
+      "year": "2020, 2022",
+      "charges": ["Rape", "Criminal sexual act", "Sexual assault"],
+      "penalCodes": ["NY Penal Law § 130.35", "CA Penal Code § 261", "CA Penal Code § 243.4"],
+      "description": "Multiple criminal convictions in New York and California for sexual assault and rape. Over 80 women made allegations. Criminal cases resulted in convictions in both jurisdictions.",
+      "sentence": "NY: 23 years. CA: 16 years (consecutive)",
+      "settlement": "$25M civil settlement with victims",
+      "jurisdiction": "New York County, Los Angeles County",
+      "sources": [
+        "NY Case No. 2302-2018",
+        "LA County Case No. BA462900",
+        "Settlement Agreement 2019"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Dennis Hastert",
+      "category": "politician",
+      "position": "Former Speaker of the House",
+      "status": "convicted",
+      "year": "2016",
+      "charges": ["Structuring cash withdrawals to evade reporting", "Sexual abuse of minors (related allegations)"],
+      "penalCodes": ["31 U.S.C. § 5324"],
+      "description": "Former House Speaker convicted of financial crimes related to hush money payments to victims of historical sexual abuse he committed while a high school wrestling coach.",
+      "sentence": "15 months federal prison (served)",
+      "settlement": "$1.7M+ to victims",
+      "jurisdiction": "Northern District of Illinois",
+      "sources": [
+        "NDIL Case No. 15-cr-324",
+        "Sentencing Hearing April 2016",
+        "Federal Bureau of Investigation Report"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "R. Kelly (Robert Kelly)",
+      "category": "other",
+      "position": "R&B Singer",
+      "status": "convicted",
+      "year": "2021, 2022",
+      "charges": ["Racketeering", "Sex trafficking", "Sexual exploitation of a child", "Kidnapping"],
+      "penalCodes": ["18 U.S.C. § 1962", "18 U.S.C. § 1591", "18 U.S.C. § 2251"],
+      "description": "Federal convictions in New York and Illinois for decades-long pattern of sexual abuse, including minors. RICO enterprise used to facilitate crimes.",
+      "sentence": "30 years (EDNY) + 20 years concurrent (NDIL) = 30 years total",
+      "settlement": "N/A - Criminal prosecution",
+      "jurisdiction": "Eastern District of New York, Northern District of Illinois",
+      "sources": [
+        "EDNY Case No. 19-cr-280",
+        "NDIL Case No. 19-cr-299",
+        "Federal Sentencing 2022"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Larry Nassar",
+      "category": "other",
+      "position": "USA Gymnastics Doctor / Michigan State University Doctor",
+      "status": "convicted",
+      "year": "2017-2018",
+      "charges": ["Sexual assault", "Child pornography possession", "Criminal sexual conduct"],
+      "penalCodes": ["18 U.S.C. § 2252", "MI Penal Code § 750.520c"],
+      "description": "Former USA Gymnastics and MSU doctor convicted of sexually abusing over 265 victims, primarily young gymnasts, under the guise of medical treatment.",
+      "sentence": "60 years federal (child porn) + 40-175 years state (assault) = effectively life",
+      "settlement": "$500M+ settlement (MSU, USAG, USOPC)",
+      "jurisdiction": "Western District of Michigan, Ingham County MI, Eaton County MI",
+      "sources": [
+        "WDMI Case No. 16-cr-172",
+        "Ingham County Case No. 17-246-FH",
+        "Settlement Agreements 2018-2021"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Bill Cosby",
+      "category": "other",
+      "position": "Comedian / Actor",
+      "status": "settled",
+      "year": "2018 (conviction overturned 2021)",
+      "charges": ["Aggravated indecent assault"],
+      "penalCodes": ["18 Pa.C.S. § 3125"],
+      "description": "Convicted in 2018 of sexual assault, served nearly 3 years before Pennsylvania Supreme Court overturned conviction on procedural grounds (prior immunity agreement). Civil settlements with multiple accusers.",
+      "sentence": "Conviction vacated 2021",
+      "settlement": "$3.38M+ to multiple victims (civil)",
+      "jurisdiction": "Montgomery County, Pennsylvania",
+      "sources": [
+        "Commonwealth v. Cosby (PA Supreme Court 2021)",
+        "Montgomery County Case No. CP-46-CR-0002525-2016",
+        "Civil Settlement Records"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Donald Trump",
+      "category": "politician",
+      "position": "Former President / Business Executive",
+      "status": "settled",
+      "year": "Multiple years",
+      "charges": ["Sexual assault/defamation (civil)", "Fraud (civil)", "Criminal charges pending in multiple jurisdictions"],
+      "penalCodes": ["Various state and federal statutes"],
+      "description": "Multiple civil judgments including $83.3M defamation verdict (E. Jean Carroll), $454M fraud judgment (NY AG). Criminal indictments in GA (election interference), FL (classified docs), DC (Jan 6), and NY (business records).",
+      "sentence": "Civil judgments; criminal cases ongoing/dismissed",
+      "settlement": "$25M (Trump University), civil judgments totaling $500M+",
+      "jurisdiction": "SDNY, Georgia, Florida, DC, New York County",
+      "sources": [
+        "Carroll v. Trump (SDNY)",
+        "NY AG v. Trump (NY Supreme Court)",
+        "Various criminal indictments 2023"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Matt Gaetz",
+      "category": "politician",
+      "position": "U.S. Representative (FL)",
+      "status": "investigated",
+      "year": "2021-2023",
+      "charges": ["Sex trafficking investigation", "Obstruction"],
+      "penalCodes": ["18 U.S.C. § 2421 (investigation)"],
+      "description": "Federal investigation into alleged sex trafficking of a minor and obstruction. DOJ declined to file charges in 2023, but House Ethics Committee investigation continued.",
+      "sentence": "No charges filed",
+      "settlement": "N/A",
+      "jurisdiction": "Middle District of Florida",
+      "sources": [
+        "DOJ Investigation 2021-2023",
+        "House Ethics Committee Report",
+        "Public reporting (NYT, CNN, WaPo)"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Jim Jordan",
+      "category": "politician",
+      "position": "U.S. Representative (OH)",
+      "status": "investigated",
+      "year": "2018-2020",
+      "charges": ["Alleged failure to report sexual abuse (no criminal charges)"],
+      "penalCodes": ["N/A - Civil allegations"],
+      "description": "Multiple former wrestlers alleged Jordan knew of sexual abuse by team doctor Richard Strauss at Ohio State University (1987-1995) and failed to report. Independent investigation confirmed widespread abuse. No criminal charges against Jordan.",
+      "sentence": "N/A",
+      "settlement": "OSU paid $60M+ to victims; Jordan not charged",
+      "jurisdiction": "Ohio (civil investigations)",
+      "sources": [
+        "Perkins Coie Independent Investigation 2019",
+        "Strauss Civil Litigation",
+        "Congressional testimony and statements"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Derek Chauvin",
+      "category": "law-enforcement",
+      "position": "Minneapolis Police Officer",
+      "status": "convicted",
+      "year": "2021",
+      "charges": ["Second-degree murder", "Third-degree murder", "Manslaughter", "Federal civil rights violations"],
+      "penalCodes": ["MN Stat. § 609.19", "MN Stat. § 609.195", "18 U.S.C. § 242"],
+      "description": "Convicted of murdering George Floyd by kneeling on his neck for over 9 minutes during arrest. State and federal convictions.",
+      "sentence": "22.5 years (state) + 21 years (federal, concurrent)",
+      "settlement": "Minneapolis paid $27M to Floyd family",
+      "jurisdiction": "Hennepin County MN, District of Minnesota",
+      "sources": [
+        "State v. Chauvin (Hennepin County)",
+        "USA v. Chauvin (D. Minn)",
+        "Civil settlement June 2020"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Brett Hankison",
+      "category": "law-enforcement",
+      "position": "Louisville Metro Police Officer",
+      "status": "convicted",
+      "year": "2024",
+      "charges": ["Federal civil rights violations in Breonna Taylor shooting"],
+      "penalCodes": ["18 U.S.C. § 242"],
+      "description": "Convicted of federal civil rights violations for reckless actions during raid that killed Breonna Taylor. Fired 10 shots through covered window.",
+      "sentence": "15 years federal prison (2024)",
+      "settlement": "Louisville paid $12M to Taylor family",
+      "jurisdiction": "Western District of Kentucky",
+      "sources": [
+        "USA v. Hankison (W.D. Ky)",
+        "Federal conviction November 2024",
+        "Civil settlement 2020"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Sean Combs (Diddy)",
+      "category": "billionaire",
+      "position": "Music Mogul / Bad Boy Records Founder",
+      "status": "ongoing",
+      "year": "2024-2025",
+      "charges": [
+        "Sex trafficking",
+        "Racketeering conspiracy",
+        "Transportation for prostitution"
+      ],
+      "penalCodes": [
+        "18 U.S.C. § 1591",
+        "18 U.S.C. § 1962",
+        "18 U.S.C. § 2421"
+      ],
+      "description": "Federal indictment on sex trafficking and racketeering charges. Allegations include decades of abuse, coercion, and operating criminal enterprise. Multiple civil lawsuits filed by alleged victims. Currently in custody awaiting trial.",
+      "sentence": "Awaiting trial - denied bail",
+      "settlement": "Multiple civil suits pending",
+      "jurisdiction": "Southern District of New York",
+      "sources": [
+        "SDNY Case No. 24-cr-542",
+        "Federal Indictment September 2024",
+        "Department of Justice Press Release"
+      ]
+    }
+  ]
+}

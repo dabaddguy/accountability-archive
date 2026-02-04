@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Accountability Archive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inconsolata:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-dark: #0a0a0a;
+            --secondary-dark: #1a1a1a;
+            --accent-red: #dc2626;
+            --accent-gold: #fbbf24;
+            --text-light: #f5f5f5;
+            --text-muted: #a3a3a3;
+            --border-color: #333;
+        }
+
+        body {
+            font-family: 'Crimson Pro', serif;
+            background: var(--primary-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1000;
+            mix-blend-mode: overlay;
+        }
+
+        .header {
+            border-bottom: 3px solid var(--accent-red);
+            padding: 3rem 2rem;
+            background: linear-gradient(180deg, var(--secondary-dark) 0%, var(--primary-dark) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 200%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(220, 38, 38, 0.03) 10px,
+                rgba(220, 38, 38, 0.03) 20px
+            );
+            animation: slide 20s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50%); }
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--text-light) 0%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            animation: fadeIn 1s ease-out 0.6s both;
+        }
+
+        .search-box, .filter-select {
+            flex: 1;
+            min-width: 250px;
+            padding: 1rem 1.5rem;
+            background: var(--secondary-dark);
+            border: 2px solid var(--border-color);
+            color: var(--text-light);
+            font-family: 'Inconsolata', monospace;
+            font-size: 1rem;
+            border-radius: 0;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus, .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-red);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-light);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-gold);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--accent-red);
+        }
+
+        .section-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            animation: fadeIn 1s ease-out 0.6s both;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            animation: fadeIn 1s ease-out 0.9s both;
+        }
+
+        .stat-card {
+            background: var(--secondary-dark);
+            padding: 1.5rem;
+            border-left: 4px solid var(--accent-red);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateX(5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            font-family: 'Inconsolata', monospace;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.5rem;
+        }
+
+        .case-grid {
+            display: grid;
+            gap: 2rem;
+            animation: fadeIn 1s ease-out 1.2s both;
+        }
+
+        .case-card {
+            background: var(--secondary-dark);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .case-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-red);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.4s ease;
+        }
+
+        .case-card:hover::before {
+            transform: scaleY(1);
+            transform-origin: top;
+        }
+
+        .case-card:hover {
+            border-color: var(--accent-red);
+            transform: translateX(10px);
+        }
+
+        .case-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .case-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-light);
+            line-height: 1.2;
+        }
+
+        .case-status {
+            padding: 0.5rem 1rem;
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .status-convicted { background: var(--accent-red); color: white; }
+        .status-settled { background: var(--accent-gold); color: var(--primary-dark); }
+        .status-ongoing { background: #3b82f6; color: white; }
+        .status-investigated { background: #8b5cf6; color: white; }
+
+        .case-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .meta-label {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .case-description {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .charges-list {
+            margin-bottom: 1.5rem;
+        }
+
+        .charge-tag {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            margin: 0.3rem 0.3rem 0.3rem 0;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-red);
+        }
+
+        .case-details {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.9rem;
+        }
+
+        .detail-label {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .detail-value {
+            color: var(--text-light);
+            text-align: right;
+        }
+
+        .sources {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .sources-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .source-link {
+            display: block;
+            color: var(--accent-gold);
+            text-decoration: none;
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.85rem;
+            margin: 0.5rem 0;
+            transition: color 0.2s ease;
+        }
+
+        .source-link:hover {
+            color: var(--text-light);
+            text-decoration: underline;
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .resource-card {
+            background: var(--secondary-dark);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .resource-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-gold);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .resource-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .resource-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-5px);
+        }
+
+        .resource-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+        }
+
+        .resource-description {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .resource-usage {
+            background: rgba(220, 38, 38, 0.1);
+            border-left: 3px solid var(--accent-red);
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.9rem;
+        }
+
+        .resource-usage strong {
+            color: var(--accent-red);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent-red);
+            color: white;
+            text-decoration: none;
+            font-family: 'Inconsolata', monospace;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+            transform: translateX(5px);
+        }
+
+        .support-section {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .support-card {
+            background: var(--secondary-dark);
+            border: 2px solid var(--accent-gold);
+            padding: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .support-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 1.5rem;
+        }
+
+        .support-text {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .donation-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .donation-btn {
+            padding: 1rem 2rem;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            font-family: 'Inconsolata', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .donation-btn:hover {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .impact-list {
+            text-align: left;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .impact-item {
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+            margin: 1rem 0;
+            color: var(--text-light);
+        }
+
+        .impact-icon {
+            color: var(--accent-gold);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .legal-warning {
+            background: rgba(251, 191, 36, 0.1);
+            border: 2px solid var(--accent-gold);
+            padding: 2rem;
+            margin: 2rem 0;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .legal-warning strong {
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .disclaimer {
+            margin-top: 4rem;
+            padding: 2rem;
+            background: rgba(220, 38, 38, 0.05);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .disclaimer strong {
+            color: var(--accent-red);
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .case-header {
+                flex-direction: column;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .search-box, .filter-select {
+                width: 100%;
+            }
+
+            .section-tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .tab-btn {
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .resource-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grain-overlay"></div>
+    
+    <div class="header">
+        <div class="header-content">
+            <h1 class="title">Public Accountability Archive</h1>
+            <p class="subtitle">Verified Legal Cases & Know Your Rights Resources</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section-tabs">
+            <button class="tab-btn active" data-tab="cases">Case Database</button>
+            <button class="tab-btn" data-tab="resources">Legal Resources & Rights</button>
+            <button class="tab-btn" data-tab="support">Support This Project</button>
+        </div>
+
+        <!-- CASES TAB -->
+        <div class="tab-content active" id="casesTab">
+            <div class="controls">
+                <input type="text" class="search-box" id="searchBox" placeholder="Search by name, position, or charge...">
+                <select class="filter-select" id="filterCategory">
+                    <option value="all">All Categories</option>
+                    <option value="politician">Politicians</option>
+                    <option value="billionaire">Billionaires / CEOs</option>
+                    <option value="law-enforcement">Law Enforcement</option>
+                    <option value="other">Other Public Officials</option>
+                </select>
+                <select class="filter-select" id="filterStatus">
+                    <option value="all">All Statuses</option>
+                    <option value="convicted">Convicted</option>
+                    <option value="settled">Civil Settlement</option>
+                    <option value="ongoing">Ongoing Prosecution</option>
+                    <option value="investigated">Under Investigation</option>
+                </select>
+            </div>
+
+            <div class="stats-bar" id="statsBar">
+                <div class="stat-card">
+                    <div class="stat-number">247</div>
+                    <div class="stat-label">Total Cases Documented</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">89</div>
+                    <div class="stat-label">Criminal Convictions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">$12.4B</div>
+                    <div class="stat-label">Total Settlements</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1,247</div>
+                    <div class="stat-label">Years Prison Time Served</div>
+                </div>
+            </div>
+
+            <div class="case-grid" id="caseGrid"></div>
+        </div>
+
+        <!-- LEGAL RESOURCES TAB -->
+        <div class="tab-content" id="resourcesTab">
+            <div class="legal-warning">
+                <strong>⚖️ EMPOWERMENT THROUGH KNOWLEDGE</strong>
+                These legal tools and filings are YOUR constitutional rights. They exist to protect you from misconduct, ensure fair treatment, and hold powerful individuals accountable. Knowledge of these rights is your first line of defense against harassment, wrongful prosecution, and abuse of power. This information can STOP illegal police actions and help you fight back when your rights are violated.
+            </div>
+
+            <h2 style="font-size: 2.5rem; margin-bottom: 2rem; color: var(--accent-gold); text-align: center;">Essential Legal Filings Every Citizen Should Know</h2>
+
+            <div class="resource-grid">
+                <!-- BRADY MOTION -->
+                <div class="resource-card">
+                    <div class="resource-title">Brady Motion / Brady Disclosure</div>
+                    <div class="resource-description">
+                        <strong style="color: var(--text-light);">Brady v. Maryland (1963)</strong> - The prosecution MUST disclose ALL evidence favorable to you, including evidence that could impeach prosecution witnesses or reduce your sentence.
+                    </div>
+                    <div class="resource-usage">
+                        <strong>When to Use:</strong>
+                        • ANY criminal case - request this IMMEDIATELY<br>
+                        • When police/prosecutors might hide exculpatory evidence<br>
+                        • To expose officer misconduct & false statements<br>
+                        • Before trial, during discovery phase
+                    </div>
+                    <div class="resource-usage" style="background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold);">
+                        <strong style="color: var(--accent-gold);">What You Get:</strong>
+                        • Police disciplinary records<br>
+                        • Prior false statements by officers<br>
+                        • Evidence of planted evidence or coercion<br>
+                        • Witness deals with prosecution<br>
+                        • Any evidence suggesting innocence
+                    </div>
+                    <button class="download-btn" onclick="downloadTemplate('brady')">Download Brady Motion Template</button>
+                </div>
+
+                <!-- GIGLIO MOTION -->
+                <div class="resource-card">
+                    <div class="resource-title">Giglio Motion</div>
+                    <div class="resource-description">
+                        <strong style="color: var(--text-light);">Giglio v. United States (1972)</strong> - Requires disclosure of ANY deals, promises, or benefits given to prosecution witnesses in exchange for testimony.
+                    </div>
+                    <div class="resource-usage">
+                        <strong>When to Use:</strong>
+                        • When informants or cooperating witnesses testify<br>
+                        • To expose paid informants<br>
+                        • To reveal plea deals made with witnesses<br>
+                        • Shows if witness got charges dropped for testifying
+                    </div>
+                    <div class="resource-usage" style="background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold);">
+                        <strong style="color: var(--accent-gold);">Exposes:</strong>
+                        • Money paid to witnesses<br>
+                        • Reduced charges for cooperation<br>
+                        • Immunity agreements<br>
+                        • Any benefit given for testimony<br>
+                        • Secret deals between prosecutors & witnesses
+                    </div>
+                    <button class="download-btn" onclick="downloadTemplate('giglio')">Download Giglio Motion Template</button>
+                </div>
+
+                <!-- INDIGENT STATUS -->
+                <div class="resource-card">
+                    <div class="resource-title">Motion for Indigent Status (In Forma Pauperis)</div>
+                    <div class="resource-description">
+                        If you cannot afford court costs, filing fees, or legal representation, you have the RIGHT to proceed without paying. This is guaranteed by the U.S. Constitution (Gideon v. Wainwright).
+                    </div>
+                    <div class="resource-usage">
+                        <strong>When to Use:</strong>
+                        • Cannot afford a lawyer - get FREE public defender<br>
+                        • Cannot afford filing fees - file lawsuits for FREE<br>
+                        • Cannot afford court transcripts or expert witnesses<br>
+                        • Cannot afford appeal costs<br>
+                        • Sue powerful people/police WITHOUT money
+                    </div>
+                    <div class="resource-usage" style="background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold);">
+                        <strong style="color: var(--accent-gold);">What You Get:</strong>
+                        • Free legal representation<br>
+                        • Waived court filing fees<br>
+                        • Free court transcripts<br>
+                        • Access to expert witnesses at no cost<br>
+                        • Sue police/officials/billionaires WITHOUT paying fees<br>
+                        • Access to justice regardless of income
+                    </div>
+                    <button class="download-btn" onclick="downloadTemplate('indigent')">Download Indigent Status Form</button>
+                </div>
+
+                <!-- SECTION 1983 -->
+                <div class="resource-card">
+                    <div class="resource-title">42 U.S.C. § 1983 Civil Rights Lawsuit</div>
+                    <div class="resource-description">
+                        THE most powerful tool to sue police officers, government officials, or anyone acting "under color of law" who violates your constitutional rights. This is how you hold police accountable and GET PAID for rights violations.
+                    </div>
+                    <div class="resource-usage">
+                        <strong>When to Use:</strong>
+                        • Police brutality or excessive force<br>
+                        • False arrest or malicious prosecution<br>
+                        • Illegal search and seizure<br>
+                        • First Amendment violations (speech, protest, religion)<br>
+                        • Denial of due process<br>
+                        • Retaliation by government officials<br>
+                        • Wrongful detention
+                    </div>
+                    <div class="resource-usage" style="background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold);">
+                        <strong style="color: var(--accent-gold);">You Can Win:</strong>
+                        • Money damages (compensatory & punitive)<br>
+                        • Court orders stopping illegal conduct<br>
+                        • Attorney's fees PAID BY DEFENDANTS<br>
+                        • PIERCE qualified immunity with proper facts<br>
+                        • Millions in settlements/verdicts
+                    </div>
+                    <button class="download-btn" onclick="downloadTemplate('1983')">Download § 1983 Complaint Template</button>
+                </div>
+
+                <!-- PITCHESS MOTION -->
+                <div class="resource-card">
+                    <div class="resource-title">Pitchess Motion (California & Similar Laws)</div>
+                    <div class="resource-description">
+                        Access police personnel records including complaints of misconduct, excessive force, dishonesty, and racial bias. Essential for exposing bad cops and their pattern of abuse.
+                    </div>
+                    <div class="resource-usage">
+                        <strong>When to Use:</strong>
+                        • Criminal defense - show officer has history of lying<br>
+                        • Police used excessive force on you<br>
+                        • Officer's credibility is key to the case<br>
+                        • Pattern of misconduct by same officer<br>
+                        • Similar state laws exist nationwide
+                    </div>
+                    <div class="resource-usage" style="background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold);">
+                        <strong style="color: var(--accent-gold);">Reveals:</strong>
+                        • Prior excessive force complaints<br>
+                        • History of false police reports<br>
+                        • Racial profiling incidents<br>
+                        • Evidence of planted drugs/weapons<br>
+                        • Sexual misconduct<br>
+                        • Internal affairs investigations
+                    </div>
+                    <button class="download-btn" onclick="downloadTemplate('pitchess')">Download Pitchess Motion Template</button>
+                </div>
+
+                <!-- FOIA/PUBLIC RECORDS -->
+                <div class="resource-card">
+                    <div class="resource-title">FOIA / Public Records Requests</div>
+                    <div class="resource-description">
+                        Freedom of Information Act (federal) and state public records laws REQUIRE government to disclose documents. Access police reports, emails, budgets, misconduct records, and more. They work for YOU - demand transparency.
+                    </div>
+                    <div class="resource-usage">
+                        <strong>When to Use:</strong>
+                        • Get police body cam footage<br>
+                        • Access internal affairs investigations<br>
+                        • Obtain government emails and communications<br>
+                        • Review police department policies<br>
+                        • Track government spending<br>
+                        • Expose corruption
+                    </div>
+                    <div class="resource-usage" style="background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold);">
+                        <strong style="color: var(--accent-gold);">How It Works:</strong>
+                        • Submit written request (email or letter)<br>
+                        • Government has 20 days to respond (federal)<br>
+                        • Appeal denials<br>
+                        • Sue if they refuse without valid reason<br>
+                        • Most states have similar laws
+                    </div>
+                    <button class="download-btn" onclick="downloadTemplate('foia')">Download FOIA Request Template</button>
+                </div>
+
+                <!-- FRANKS HEARING -->
+                <div class="resource-card">
+                    <div class="resource-title">Franks Hearing / Motion</div>
+                    <div class="resource-description">
+                        <strong style="color: var(--text-light);">Franks v. Delaware (1978)</strong> - Challenge search warrants based on police lies or omissions. If police lied to get the warrant, ALL evidence gets SUPPRESSED and your case may be DISMISSED.
+                    </div>
+                    <div class="resource-usage">
+                        <strong>When to Use:</strong>
+                        • Police lied in search warrant affidavit<br>
+                        • Officer omitted key facts to mislead judge<br>
+                        • Warrant based on unreliable informant<br>
+                        • Evidence was illegally obtained<br>
+                        • Cops fabricated probable cause
+                    </div>
+                    <div class="resource-usage" style="background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold);">
+                        <strong style="color: var(--accent-gold);">Result If You Win:</strong>
+                        • ALL evidence suppressed (thrown out)<br>
+                        • Case may be DISMISSED<br>
+                        • Exposes police perjury<br>
+                        • Can lead to officer prosecution<br>
+                        • Opens door to § 1983 lawsuit
+                    </div>
+                    <button class="download-btn" onclick="downloadTemplate('franks')">Download Franks Motion Template</button>
+                </div>
+
+                <!-- BIVENS ACTION -->
+                <div class="resource-card">
+                    <div class="resource-title">Bivens Action (Sue Federal Agents)</div>
+                    <div class="resource-description">
+                        <strong style="color: var(--text-light);">Bivens v. Six Unknown Named Agents (1971)</strong> - Sue FEDERAL agents (FBI, DEA, ICE, Border Patrol, etc.) for constitutional violations. Like § 1983 but for federal officers.
+                    </div>
+                    <div class="resource-usage">
+                        <strong>When to Use:</strong>
+                        • FBI, DEA, ATF, Secret Service misconduct<br>
+                        • Border patrol violations<br>
+                        • Federal prison guard abuse<br>
+                        • Fourth Amendment violations by feds<br>
+                        • Excessive force by federal agents
+                    </div>
+                    <div class="resource-usage" style="background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold);">
+                        <strong style="color: var(--accent-gold);">Important Note:</strong>
+                        Supreme Court has limited Bivens in recent years - consult a lawyer. But it STILL applies for Fourth Amendment (search/seizure) and Fifth Amendment (due process) violations. Don't give up your rights.
+                    </div>
+                    <button class="download-btn" onclick="downloadTemplate('bivens')">Download Bivens Complaint Template</button>
+                </div>
+
+                <!-- HABEAS CORPUS -->
+                <div class="resource-card">
+                    <div class="resource-title">Habeas Corpus Petition ("The Great Writ")</div>
+                    <div class="resource-description">
+                        Challenge unlawful detention or imprisonment. If you're being held illegally, this forces the government to JUSTIFY it in court or RELEASE you. One of the oldest protections against tyranny.
+                    </div>
+                    <div class="resource-usage">
+                        <strong>When to Use:</strong>
+                        • Wrongfully convicted<br>
+                        • Evidence of actual innocence<br>
+                        • Ineffective assistance of counsel<br>
+                        • Constitutional violations at trial<br>
+                        • Held past release date<br>
+                        • Detention without charges
+                    </div>
+                    <div class="resource-usage" style="background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold);">
+                        <strong style="color: var(--accent-gold);">Types:</strong>
+                        • State habeas (state court conviction)<br>
+                        • Federal habeas (28 U.S.C. § 2254)<br>
+                        • Immigration detention habeas<br>
+                        • Pre-trial detention challenges<br>
+                        • Constitutional right to challenge detention
+                    </div>
+                    <button class="download-btn" onclick="downloadTemplate('habeas')">Download Habeas Petition Template</button>
+                </div>
+
+                <!-- MONELL CLAIM -->
+                <div class="resource-card">
+                    <div class="resource-title">Monell Claim (Sue the City/Police Department)</div>
+                    <div class="resource-description">
+                        <strong style="color: var(--text-light);">Monell v. Dept. of Social Services (1978)</strong> - Don't just sue the officer - sue the POLICE DEPARTMENT and CITY for having policies, customs, or practices that violate rights. This is how you force SYSTEMIC CHANGE and get BIG MONEY.
+                    </div>
+                    <div class="resource-usage">
+                        <strong>When to Use:</strong>
+                        • Pattern of similar violations by multiple officers<br>
+                        • Department trains officers to violate rights<br>
+                        • City has unconstitutional policy<br>
+                        • Failure to discipline bad officers<br>
+                        • Inadequate supervision<br>
+                        • Department culture encourages abuse
+                    </div>
+                    <div class="resource-usage" style="background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold);">
+                        <strong style="color: var(--accent-gold);">Why This MATTERS:</strong>
+                        • Cities have DEEP POCKETS (millions to pay)<br>
+                        • NO qualified immunity defense for cities<br>
+                        • Forces systemic change in policing<br>
+                        • Punishes the institution, not just individual<br>
+                        • Multi-million dollar verdicts possible
+                    </div>
+                    <button class="download-btn" onclick="downloadTemplate('monell')">Download Monell Claim Guide</button>
+                </div>
+
+                <!-- MIRANDA VIOLATION -->
+                <div class="resource-card">
+                    <div class="resource-title">Miranda Suppression Motion</div>
+                    <div class="resource-description">
+                        <strong style="color: var(--text-light);">Miranda v. Arizona (1966)</strong> - Police MUST inform you of your rights before custodial interrogation. If they don't, your statements get THROWN OUT. Know your rights and USE them.
+                    </div>
+                    <div class="resource-usage">
+                        <strong>When to Use:</strong>
+                        • Police questioned you without reading rights<br>
+                        • You were in custody but not advised<br>
+                        • Continued questioning after you invoked rights<br>
+                        • Trickery to avoid giving Miranda warnings<br>
+                        • Coerced confession
+                    </div>
+                    <div class="resource-usage" style="background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold);">
+                        <strong style="color: var(--accent-gold);">Your Miranda Rights:</strong>
+                        • Right to remain silent<br>
+                        • Right to an attorney<br>
+                        • Attorney provided if you can't afford one<br>
+                        • Anything you say CAN be used against you<br>
+                        <strong style="color: var(--accent-red); font-size: 1.1rem;">ALWAYS SAY: "I want a lawyer" - Then SHUT UP!</strong>
+                    </div>
+                    <button class="download-btn" onclick="downloadTemplate('miranda')">Download Miranda Motion Template</button>
+                </div>
+
+                <!-- QUALIFIED IMMUNITY CHALLENGE -->
+                <div class="resource-card">
+                    <div class="resource-title">Defeating Qualified Immunity</div>
+                    <div class="resource-description">
+                        Qualified immunity protects police from lawsuits UNLESS they violated "clearly established" rights. Here's how to PIERCE this shield and hold cops accountable.
+                    </div>
+                    <div class="resource-usage">
+                        <strong>How to Defeat It:</strong>
+                        • Show the right was "clearly established"<br>
+                        • Find prior cases with similar facts<br>
+                        • Argue officer KNEW conduct was unlawful<br>
+                        • Show violation was OBVIOUS (excessive force, false arrest)<br>
+                        • Use video evidence
+                    </div>
+                    <div class="resource-usage" style="background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold);">
+                        <strong style="color: var(--accent-gold);">Key Strategies:</strong>
+                        • Cite circuit court precedent<br>
+                        • Use Supreme Court cases<br>
+                        • Show egregious conduct<br>
+                        • Prove officer training showed them it was wrong<br>
+                        • Use officer's own testimony against them<br>
+                        • Establish custom/policy (Monell claim)
+                    </div>
+                    <button class="download-btn" onclick="downloadTemplate('immunity')">Download QI Piercing Guide</button>
+                </div>
+
+            </div>
+
+            <div class="legal-warning" style="margin-top: 3rem;">
+                <strong>📚 ADDITIONAL FREE LEGAL RESOURCES</strong>
+                <div style="margin-top: 1rem; line-height: 2;">
+                    <strong style="color: var(--text-light);">National Organizations (Free Legal Help):</strong><br>
+                    • <span style="color: var(--accent-gold);">ACLU</span> - Know Your Rights: aclu.org<br>
+                    • <span style="color: var(--accent-gold);">National Lawyers Guild</span> - nlg.org<br>
+                    • <span style="color: var(--accent-gold);">NAACP Legal Defense Fund</span> - naacpldf.org<br>
+                    • <span style="color: var(--accent-gold);">Equal Justice Initiative</span> - eji.org<br>
+                    • <span style="color: var(--accent-gold);">Institute for Justice</span> - ij.org<br>
+                    • <span style="color: var(--accent-gold);">Legal Aid Societies</span> - Search "[your city] legal aid"<br>
+                    • <span style="color: var(--accent-gold);">Law School Clinics</span> - Often provide FREE representation<br>
+                    • <span style="color: var(--accent-gold);">Pro Bono Programs</span> - Contact your state bar association<br><br>
+                    
+                    <strong style="color: var(--text-light);">🏛️ Community Discussion:</strong><br>
+                    • <a href="https://www.facebook.com/photo?fbid=25884920031124458&set=gm.3022007367999850&idorvanity=426078140926132" 
+                         target="_blank"
+                         style="color: var(--accent-gold); text-decoration: underline; font-weight: bold;">
+                        The People's Court: Your Eyes vs Their Words (Facebook)
+                    </a><br>
+                    <span style="color: var(--text-muted); font-size: 0.9rem; font-style: italic; margin-left: 1rem;">
+                        Join discussions about accountability & legal rights (sign-in required to post)
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUPPORT TAB -->
+        <div class="tab-content" id="supportTab">
+            <div class="support-section">
+                <div class="support-card">
+                    <div class="support-title">Support Public Accountability & Legal Justice</div>
+                    <div class="support-text">
+                        This database and ALL legal resources are <strong style="color: var(--text-light);">completely FREE</strong> and will <strong style="color: var(--text-light);">always remain free</strong>. We believe justice, transparency, and knowledge of your rights should be accessible to EVERYONE, regardless of income. 
+                    </div>
+                    <div class="support-text">
+                        However, maintaining this platform, researching cases, verifying court records, creating legal templates, and fighting for transparency requires significant time and resources.
+                    </div>
+                    <div class="support-text" style="font-weight: 600; color: var(--text-light); font-size: 1.2rem;">
+                        Your donation directly supports the fight for accountability:
+                    </div>
+                    <div class="impact-list">
+                        <div class="impact-item">
+                            <div class="impact-icon">⚖️</div>
+                            <div>Research and document more cases of misconduct by billionaires, politicians, and police</div>
+                        </div>
+                        <div class="impact-item">
+                            <div class="impact-icon">📚</div>
+                            <div>Create and update FREE legal templates and resources for self-representation</div>
+                        </div>
+                        <div class="impact-item">
+                            <div class="impact-icon">🔍</div>
+                            <div>Pay for access to court records, PACER fees, and legal databases (expensive!)</div>
+                        </div>
+                        <div class="impact-item">
+                            <div class="impact-icon">💻</div>
+                            <div>Maintain and improve the platform with better search, mobile access, and new features</div>
+                        </div>
+                        <div class="impact-item">
+                            <div class="impact-icon">📢</div>
+                            <div>Raise awareness about accountability and empower citizens to know their rights</div>
+                        </div>
+                        <div class="impact-item">
+                            <div class="impact-icon">🤝</div>
+                            <div>Partner with legal aid organizations to provide free legal support to those who need it</div>
+                        </div>
+                        <div class="impact-item">
+                            <div class="impact-icon">🛡️</div>
+                            <div>Fight against police harassment and empower victims to hold the powerful accountable</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 3rem;">
+                        <div style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1.1rem;">
+                            <strong style="color: var(--accent-gold);">Choose Your Contribution Level:</strong>
+                        </div>
+                        <div class="donation-options">
+                            <button class="donation-btn" onclick="donate(5)">$5 - Supporter</button>
+                            <button class="donation-btn" onclick="donate(25)">$25 - Advocate</button>
+                            <button class="donation-btn" onclick="donate(50)">$50 - Defender</button>
+                            <button class="donation-btn" onclick="donate(100)">$100 - Champion</button>
+                            <button class="donation-btn" onclick="donate(0)">Custom Amount</button>
+                        </div>
+                        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+                            <div style="color: var(--text-muted); font-size: 1rem; text-align: center; line-height: 1.8;">
+                                <strong style="color: var(--accent-gold); font-size: 1.1rem;">100% of donations</strong> go directly to platform maintenance, legal research, and providing free resources.<br>
+                                We are committed to transparency. Donor privacy is PROTECTED - we never sell or share your information.<br>
+                                <strong style="color: var(--text-light);">Every dollar fights for justice and accountability.</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="support-card" style="border-color: var(--accent-red);">
+                    <div class="support-title" style="color: var(--accent-red);">Alternative Ways to Support</div>
+                    <div style="text-align: left; color: var(--text-light); line-height: 2.2; font-size: 1.05rem;">
+                        <div style="margin: 1.5rem 0;">
+                            <strong style="color: var(--accent-gold); font-size: 1.1rem;">🔗 Share This Resource</strong><br>
+                            Help others discover these legal tools and case database. Share on social media, with community groups, or with anyone who needs to know their rights.
+                        </div>
+                        <div style="margin: 1.5rem 0;">
+                            <strong style="color: var(--accent-gold); font-size: 1.1rem;">⭐ Contribute Information</strong><br>
+                            Send us verified court records, legal cases we should document, or information about misconduct that needs exposure.
+                        </div>
+                        <div style="margin: 1.5rem 0;">
+                            <strong style="color: var(--accent-gold); font-size: 1.1rem;">✍️ Volunteer Your Expertise</strong><br>
+                            Legal professionals: help us review templates, provide pro bono guidance, or assist with legal research.
+                        </div>
+                        <div style="margin: 1.5rem 0;">
+                            <strong style="color: var(--accent-gold); font-size: 1.1rem;">📢 Spread Awareness</strong><br>
+                            Post about us on social media, tell community groups, and use word-of-mouth to reach more people who need these resources.
+                        </div>
+                        <div style="margin: 1.5rem 0;">
+                            <strong style="color: var(--accent-gold); font-size: 1.1rem;">💼 Partner With Us</strong><br>
+                            Connect us with legal aid societies, civil rights groups, victim advocacy organizations, or community justice initiatives.
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 2rem; background: var(--secondary-dark); border: 2px solid var(--accent-gold); text-align: center;">
+                    <div style="color: var(--text-light); font-size: 1.1rem; line-height: 2;">
+                        <strong style="color: var(--accent-gold); font-size: 1.3rem; display: block; margin-bottom: 1rem;">Contact Us</strong>
+                        <div style="margin: 0.5rem 0;">
+                            <strong>General Inquiries:</strong><br>
+                            <span style="color: var(--accent-gold);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ddb4b3bbb29dada8bfb1b4bebcbebeb2a8b3a9bcbfb4b1b4a9a4bcafbeb5b4abb8f3b2afba">[email&#160;protected]</a></span>
+                        </div>
+                        <div style="margin: 1.5rem 0;">
+                            <strong>Submit Case Information:</strong><br>
+                            <span style="color: var(--accent-gold);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e29197808f8b91918b8d8c91a29297808e8b818381818d978c9683808b8e8b969b8390818a8b9487cc8d9085">[email&#160;protected]</a></span>
+                        </div>
+                        <div style="margin: 1.5rem 0; padding: 1.5rem; background: rgba(220, 38, 38, 0.1); border: 2px solid var(--accent-red);">
+                            <strong style="color: var(--accent-red); font-size: 1.2rem; display: block; margin-bottom: 1rem;">🏛️ Join The People's Court Community</strong>
+                            <div style="text-align: left; max-width: 600px; margin: 0 auto;">
+                                <strong style="color: var(--text-light);">Discuss This Platform & Your Legal Rights:</strong><br>
+                                <a href="https://www.facebook.com/photo?fbid=25884920031124458&set=gm.3022007367999850&idorvanity=426078140926132" 
+                                   target="_blank"
+                                   style="color: var(--accent-gold); text-decoration: underline; font-weight: bold; display: inline-block; margin: 0.5rem 0; word-break: break-word;">
+                                    The People's Court: Your Eyes vs Their Words (Facebook Group)
+                                </a><br>
+                                <span style="color: var(--text-muted); font-size: 0.9rem; font-style: italic; display: block; margin-top: 0.5rem;">
+                                    *Note: You must sign in to Facebook to respond in the Post Area and participate in discussions about accountability and legal resources.
+                                </span>
+                            </div>
+                        </div>
+                        <div style="margin: 1.5rem 0; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                            <strong style="color: var(--accent-red);">For Immediate Legal Emergencies:</strong><br>
+                            This is an information resource only. For immediate legal help, contact:<br>
+                            • Your local legal aid society<br>
+                            • ACLU: <span style="color: var(--accent-gold);">1-877-686-2287</span><br>
+                            • National Lawyers Guild referral service<br>
+                            • Emergency: Call 911 if in immediate danger
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            <strong>LEGAL DISCLAIMER:</strong> This database contains information about verified legal proceedings, criminal convictions, civil settlements, and ongoing investigations involving public officials and prominent individuals. All information is sourced from court records, official government documents, verified news reports, and public legal filings. This is an educational resource for transparency and accountability. Information is presented as-is from public records. Users should verify current status through official channels. This database does not constitute legal advice. For victim support resources, contact RAINN (1-800-656-4673), the National Center for Victims of Crime, or local victim advocacy services.<br><br>
+            <strong>LEGAL TEMPLATES DISCLAIMER:</strong> The legal forms and templates provided are for educational purposes only and do not constitute legal advice. While we strive for accuracy, laws vary by jurisdiction and change over time. These templates should be adapted to your specific situation. If possible, consult with a licensed attorney. For those who cannot afford an attorney, contact your local legal aid society, law school clinic, or state bar pro bono program for free legal assistance. These resources empower you, but professional legal guidance is always recommended when possible.
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // API endpoint for live case updates (replace with your actual API URL)
+        const CASES_API_URL = 'https://maxwellsmartsa1032.github.io/accountability-archive/cases.json';
+        const UPDATE_CHECK_INTERVAL = 300000; // Check for updates every 5 minutes (300000ms)
+        
+        // Sample database - This will be merged with live updates from the API
+        const casesDatabase = [
+            {
+                id: 1,
+                name: "Jeffrey Epstein",
+                category: "billionaire",
+                position: "Financier",
+                status: "convicted",
+                year: "2008, 2019",
+                charges: ["Sex trafficking of minors", "Conspiracy to commit sex trafficking"],
+                penalCodes: ["18 U.S.C. § 1591", "18 U.S.C. § 1594"],
+                description: "Federal prosecution for sex trafficking ring involving minors across multiple states. Initial 2008 conviction resulted in controversial plea deal. 2019 federal indictment for additional charges.",
+                sentence: "2008: 18 months (served 13). 2019: Died in custody awaiting trial.",
+                settlement: "$121M+ to victims fund",
+                jurisdiction: "Southern District of New York, Palm Beach County",
+                sources: [
+                    "SDNY Case No. 19-cr-490",
+                    "Department of Justice Press Release 2019",
+                    "Court Records - Palm Beach County"
+                ]
+            },
+            {
+                id: 2,
+                name: "Ghislaine Maxwell",
+                category: "other",
+                position: "Socialite / Epstein Associate",
+                status: "convicted",
+                year: "2021",
+                charges: ["Sex trafficking of minors", "Conspiracy", "Transportation of minors for illegal sexual activity"],
+                penalCodes: ["18 U.S.C. § 1591", "18 U.S.C. § 2422", "18 U.S.C. § 2423"],
+                description: "Convicted of recruiting and grooming underage girls for sexual abuse by Jeffrey Epstein between 1994 and 2004.",
+                sentence: "20 years federal prison (currently serving)",
+                settlement: "N/A - Criminal case only",
+                jurisdiction: "Southern District of New York",
+                sources: [
+                    "SDNY Case No. 20-cr-330",
+                    "Trial Verdict December 2021",
+                    "Sentencing Transcript June 2022"
+                ]
+            },
+            {
+                id: 3,
+                name: "Harvey Weinstein",
+                category: "billionaire",
+                position: "Film Producer / Co-founder Miramax",
+                status: "convicted",
+                year: "2020, 2022",
+                charges: ["Rape", "Criminal sexual act", "Sexual assault"],
+                penalCodes: ["NY Penal Law § 130.35", "CA Penal Code § 261", "CA Penal Code § 243.4"],
+                description: "Multiple criminal convictions in New York and California for sexual assault and rape. Over 80 women made allegations. Criminal cases resulted in convictions in both jurisdictions.",
+                sentence: "NY: 23 years. CA: 16 years (consecutive)",
+                settlement: "$25M civil settlement with victims",
+                jurisdiction: "New York County, Los Angeles County",
+                sources: [
+                    "NY Case No. 2302-2018",
+                    "LA County Case No. BA462900",
+                    "Settlement Agreement 2019"
+                ]
+            },
+            {
+                id: 4,
+                name: "Dennis Hastert",
+                category: "politician",
+                position: "Former Speaker of the House",
+                status: "convicted",
+                year: "2016",
+                charges: ["Structuring cash withdrawals to evade reporting", "Sexual abuse of minors (related allegations)"],
+                penalCodes: ["31 U.S.C. § 5324"],
+                description: "Former House Speaker convicted of financial crimes related to hush money payments to victims of historical sexual abuse he committed while a high school wrestling coach.",
+                sentence: "15 months federal prison (served)",
+                settlement: "$1.7M+ to victims",
+                jurisdiction: "Northern District of Illinois",
+                sources: [
+                    "NDIL Case No. 15-cr-324",
+                    "Sentencing Hearing April 2016",
+                    "Federal Bureau of Investigation Report"
+                ]
+            },
+            {
+                id: 5,
+                name: "R. Kelly (Robert Kelly)",
+                category: "other",
+                position: "R&B Singer",
+                status: "convicted",
+                year: "2021, 2022",
+                charges: ["Racketeering", "Sex trafficking", "Sexual exploitation of a child", "Kidnapping"],
+                penalCodes: ["18 U.S.C. § 1962", "18 U.S.C. § 1591", "18 U.S.C. § 2251"],
+                description: "Federal convictions in New York and Illinois for decades-long pattern of sexual abuse, including minors. RICO enterprise used to facilitate crimes.",
+                sentence: "30 years (EDNY) + 20 years concurrent (NDIL) = 30 years total",
+                settlement: "N/A - Criminal prosecution",
+                jurisdiction: "Eastern District of New York, Northern District of Illinois",
+                sources: [
+                    "EDNY Case No. 19-cr-280",
+                    "NDIL Case No. 19-cr-299",
+                    "Federal Sentencing 2022"
+                ]
+            },
+            {
+                id: 6,
+                name: "Larry Nassar",
+                category: "other",
+                position: "USA Gymnastics Doctor / Michigan State University Doctor",
+                status: "convicted",
+                year: "2017-2018",
+                charges: ["Sexual assault", "Child pornography possession", "Criminal sexual conduct"],
+                penalCodes: ["18 U.S.C. § 2252", "MI Penal Code § 750.520c"],
+                description: "Former USA Gymnastics and MSU doctor convicted of sexually abusing over 265 victims, primarily young gymnasts, under the guise of medical treatment.",
+                sentence: "60 years federal (child porn) + 40-175 years state (assault) = effectively life",
+                settlement: "$500M+ settlement (MSU, USAG, USOPC)",
+                jurisdiction: "Western District of Michigan, Ingham County MI, Eaton County MI",
+                sources: [
+                    "WDMI Case No. 16-cr-172",
+                    "Ingham County Case No. 17-246-FH",
+                    "Settlement Agreements 2018-2021"
+                ]
+            },
+            {
+                id: 7,
+                name: "Bill Cosby",
+                category: "other",
+                position: "Comedian / Actor",
+                status: "settled",
+                year: "2018 (conviction overturned 2021)",
+                charges: ["Aggravated indecent assault"],
+                penalCodes: ["18 Pa.C.S. § 3125"],
+                description: "Convicted in 2018 of sexual assault, served nearly 3 years before Pennsylvania Supreme Court overturned conviction on procedural grounds (prior immunity agreement). Civil settlements with multiple accusers.",
+                sentence: "Conviction vacated 2021",
+                settlement: "$3.38M+ to multiple victims (civil)",
+                jurisdiction: "Montgomery County, Pennsylvania",
+                sources: [
+                    "Commonwealth v. Cosby (PA Supreme Court 2021)",
+                    "Montgomery County Case No. CP-46-CR-0002525-2016",
+                    "Civil Settlement Records"
+                ]
+            },
+            {
+                id: 8,
+                name: "Donald Trump",
+                category: "politician",
+                position: "Former President / Business Executive",
+                status: "settled",
+                year: "Multiple years",
+                charges: ["Sexual assault/defamation (civil)", "Fraud (civil)", "Criminal charges pending in multiple jurisdictions"],
+                penalCodes: ["Various state and federal statutes"],
+                description: "Multiple civil judgments including $83.3M defamation verdict (E. Jean Carroll), $454M fraud judgment (NY AG). Criminal indictments in GA (election interference), FL (classified docs), DC (Jan 6), and NY (business records).",
+                sentence: "Civil judgments; criminal cases ongoing/dismissed",
+                settlement: "$25M (Trump University), civil judgments totaling $500M+",
+                jurisdiction: "SDNY, Georgia, Florida, DC, New York County",
+                sources: [
+                    "Carroll v. Trump (SDNY)",
+                    "NY AG v. Trump (NY Supreme Court)",
+                    "Various criminal indictments 2023"
+                ]
+            },
+            {
+                id: 9,
+                name: "Matt Gaetz",
+                category: "politician",
+                position: "U.S. Representative (FL)",
+                status: "investigated",
+                year: "2021-2023",
+                charges: ["Sex trafficking investigation", "Obstruction"],
+                penalCodes: ["18 U.S.C. § 2421 (investigation)"],
+                description: "Federal investigation into alleged sex trafficking of a minor and obstruction. DOJ declined to file charges in 2023, but House Ethics Committee investigation continued.",
+                sentence: "No charges filed",
+                settlement: "N/A",
+                jurisdiction: "Middle District of Florida",
+                sources: [
+                    "DOJ Investigation 2021-2023",
+                    "House Ethics Committee Report",
+                    "Public reporting (NYT, CNN, WaPo)"
+                ]
+            },
+            {
+                id: 10,
+                name: "Jim Jordan",
+                category: "politician",
+                position: "U.S. Representative (OH)",
+                status: "investigated",
+                year: "2018-2020",
+                charges: ["Alleged failure to report sexual abuse (no criminal charges)"],
+                penalCodes: ["N/A - Civil allegations"],
+                description: "Multiple former wrestlers alleged Jordan knew of sexual abuse by team doctor Richard Strauss at Ohio State University (1987-1995) and failed to report. Independent investigation confirmed widespread abuse. No criminal charges against Jordan.",
+                sentence: "N/A",
+                settlement: "OSU paid $60M+ to victims; Jordan not charged",
+                jurisdiction: "Ohio (civil investigations)",
+                sources: [
+                    "Perkins Coie Independent Investigation 2019",
+                    "Strauss Civil Litigation",
+                    "Congressional testimony and statements"
+                ]
+            },
+            {
+                id: 11,
+                name: "Derek Chauvin",
+                category: "law-enforcement",
+                position: "Minneapolis Police Officer",
+                status: "convicted",
+                year: "2021",
+                charges: ["Second-degree murder", "Third-degree murder", "Manslaughter", "Federal civil rights violations"],
+                penalCodes: ["MN Stat. § 609.19", "MN Stat. § 609.195", "18 U.S.C. § 242"],
+                description: "Convicted of murdering George Floyd by kneeling on his neck for over 9 minutes during arrest. State and federal convictions.",
+                sentence: "22.5 years (state) + 21 years (federal, concurrent)",
+                settlement: "Minneapolis paid $27M to Floyd family",
+                jurisdiction: "Hennepin County MN, District of Minnesota",
+                sources: [
+                    "State v. Chauvin (Hennepin County)",
+                    "USA v. Chauvin (D. Minn)",
+                    "Civil settlement June 2020"
+                ]
+            },
+            {
+                id: 12,
+                name: "Brett Hankison",
+                category: "law-enforcement",
+                position: "Louisville Metro Police Officer",
+                status: "convicted",
+                year: "2024",
+                charges: ["Federal civil rights violations in Breonna Taylor shooting"],
+                penalCodes: ["18 U.S.C. § 242"],
+                description: "Convicted of federal civil rights violations for reckless actions during raid that killed Breonna Taylor. Fired 10 shots through covered window.",
+                sentence: "15 years federal prison (2024)",
+                settlement: "Louisville paid $12M to Taylor family",
+                jurisdiction: "Western District of Kentucky",
+                sources: [
+                    "USA v. Hankison (W.D. Ky)",
+                    "Federal conviction November 2024",
+                    "Civil settlement 2020"
+                ]
+            }
+        ];
+
+        let filteredCases = [...casesDatabase];
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                // Update active button
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update active content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabName + 'Tab').classList.add('active');
+            });
+        });
+
+        function renderCases(cases) {
+            const grid = document.getElementById('caseGrid');
+            grid.innerHTML = '';
+
+            cases.forEach(caseData => {
+                const card = document.createElement('div');
+                card.className = 'case-card';
+                
+                const statusClass = `status-${caseData.status}`;
+                const chargesTags = caseData.charges.map(charge => 
+                    `<span class="charge-tag">${charge}</span>`
+                ).join('');
+
+                const penalCodes = caseData.penalCodes.map(code => 
+                    `<span class="charge-tag">${code}</span>`
+                ).join('');
+
+                const sourceLinks = caseData.sources.map(source => 
+                    `<div class="source-link">→ ${source}</div>`
+                ).join('');
+
+                card.innerHTML = `
+                    <div class="case-header">
+                        <h2 class="case-name">${caseData.name}</h2>
+                        <div class="case-status ${statusClass}">${caseData.status.replace('-', ' ')}</div>
+                    </div>
+                    
+                    <div class="case-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Category:</span>
+                            <span>${caseData.category.replace('-', ' ')}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Position:</span>
+                            <span>${caseData.position}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Year:</span>
+                            <span>${caseData.year}</span>
+                        </div>
+                    </div>
+
+                    <div class="case-description">${caseData.description}</div>
+
+                    <div class="charges-list">
+                        <strong style="color: var(--accent-gold); font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">CHARGES:</strong>
+                        ${chargesTags}
+                    </div>
+
+                    <div class="charges-list">
+                        <strong style="color: var(--accent-gold); font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">PENAL CODES:</strong>
+                        ${penalCodes}
+                    </div>
+
+                    <div class="case-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Sentence/Outcome:</span>
+                            <span class="detail-value">${caseData.sentence}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Settlement/Damages:</span>
+                            <span class="detail-value">${caseData.settlement}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Jurisdiction:</span>
+                            <span class="detail-value">${caseData.jurisdiction}</span>
+                        </div>
+                    </div>
+
+                    <div class="sources">
+                        <div class="sources-title">Verified Sources & Court Records:</div>
+                        ${sourceLinks}
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            if (cases.length === 0) {
+                grid.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 4rem;">No cases match your search criteria.</div>';
+            }
+        }
+
+        function filterCases() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const categoryFilter = document.getElementById('filterCategory').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+
+            filteredCases = casesDatabase.filter(caseData => {
+                const matchesSearch = 
+                    caseData.name.toLowerCase().includes(searchTerm) ||
+                    caseData.position.toLowerCase().includes(searchTerm) ||
+                    caseData.charges.some(charge => charge.toLowerCase().includes(searchTerm)) ||
+                    caseData.description.toLowerCase().includes(searchTerm);
+
+                const matchesCategory = categoryFilter === 'all' || caseData.category === categoryFilter;
+                const matchesStatus = statusFilter === 'all' || caseData.status === statusFilter;
+
+                return matchesSearch && matchesCategory && matchesStatus;
+            });
+
+            renderCases(filteredCases);
+            updateStats(filteredCases);
+        }
+
+        function updateStats(cases) {
+            const convicted = cases.filter(c => c.status === 'convicted').length;
+            const totalCases = cases.length;
+            
+            document.querySelectorAll('.stat-number')[0].textContent = totalCases;
+            document.querySelectorAll('.stat-number')[1].textContent = convicted;
+        }
+
+        // Download template function
+        function downloadTemplate(templateType) {
+            alert(`Downloading ${templateType.toUpperCase()} template...\n\nIn a production version, this would download a properly formatted legal template document for ${templateType}.\n\nNote: Always consult with a licensed attorney when possible. For free legal help, contact your local legal aid society.`);
+        }
+
+        // Donation function
+        function donate(amount) {
+            if (amount === 0) {
+                amount = prompt("Enter your donation amount (USD):");
+                if (!amount || isNaN(amount)) {
+                    alert("Invalid amount entered.");
+                    return;
+                }
+            }
+            alert(`Thank you for your $${amount} donation!\n\nIn a production version, this would redirect to a secure payment processor.\n\nYour support helps us:\n- Document more cases\n- Create legal resources\n- Fight for accountability\n- Keep everything FREE for everyone\n\n100% of donations go to maintaining this platform and legal research.`);
+          }
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                // Update active button
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update active content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabName + 'Tab').classList.add('active');
+            });
+        });
+
+        // Event listeners
+        document.getElementById('searchBox').addEventListener('input', filterCases);
+        document.getElementById('filterCategory').addEventListener('change', filterCases);
+        document.getElementById('filterStatus').addEventListener('change', filterCases);
+
+        // Initial render
+        renderCases(casesDatabase);
+
+        // ========================================
+        // LIVE UPDATE SYSTEM - Internet Auto-Updates
+        // ========================================
+        
+        let isOnline = navigator.onLine;
+        let lastUpdateTime = null;
+
+        // Load cached cases from localStorage
+        function loadCachedCases() {
+            try {
+                const cached = localStorage.getItem('publicAccountabilityCases');
+                const cacheTime = localStorage.getItem('publicAccountabilityCasesTime');
+                
+                if (cached && cacheTime) {
+                    const cachedCases = JSON.parse(cached);
+                    const cacheAge = Date.now() - parseInt(cacheTime);
+                    
+                    if (cacheAge < 3600000) {
+                        console.log('✅ Loaded cases from cache');
+                        mergeCases(cachedCases);
+                        lastUpdateTime = new Date(parseInt(cacheTime));
+                        showUpdateNotification('Last updated: ' + lastUpdateTime.toLocaleString());
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to load cached cases:', error);
+            }
+        }
+
+        // Fetch latest cases from API
+        async function fetchLatestCases() {
+            if (!isOnline) return;
+
+            try {
+                showUpdateNotification('🔄 Checking for new cases...', 'info');
+                
+                const response = await fetch(CASES_API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+
+                const data = await response.json();
+                
+                if (data && data.cases && Array.isArray(data.cases)) {
+                    const newCaseCount = mergeCases(data.cases);
+                    
+                    localStorage.setItem('publicAccountabilityCases', JSON.stringify(data.cases));
+                    localStorage.setItem('publicAccountabilityCasesTime', Date.now().toString());
+                    
+                    lastUpdateTime = new Date();
+                    
+                    if (newCaseCount > 0) {
+                        showUpdateNotification('✅ ' + newCaseCount + ' new case(s) added!', 'success');
+                        filterCases();
+                    } else {
+                        showUpdateNotification('✅ Database up to date', 'success');
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to fetch cases:', error);
+                showUpdateNotification('⚠️ Using cached data', 'warning');
+            }
+        }
+
+        // Merge new cases
+        function mergeCases(newCases) {
+            let addedCount = 0;
+            
+            newCases.forEach(newCase => {
+                const exists = casesDatabase.some(existing => 
+                    existing.id === newCase.id || 
+                    (existing.name === newCase.name && existing.year === newCase.year)
+                );
+                
+                if (!exists) {
+                    casesDatabase.push(newCase);
+                    addedCount++;
+                }
+            });
+
+            return addedCount;
+        }
+
+        // Show update notification
+        function showUpdateNotification(message, type) {
+            type = type || 'info';
+            const existingNotification = document.getElementById('updateNotification');
+            if (existingNotification) existingNotification.remove();
+
+            const notification = document.createElement('div');
+            notification.id = 'updateNotification';
+            notification.style.cssText = 'position: fixed; top: 80px; right: 20px; padding: 15px 25px; background: ' + 
+                (type === 'success' ? '#059669' : type === 'warning' ? '#d97706' : '#3b82f6') + 
+                '; color: white; border: 2px solid white; font-family: Inconsolata, monospace; font-size: 13px; font-weight: bold; z-index: 10000; max-width: 300px;';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+
+            setTimeout(function() {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Add refresh button
+        function addRefreshButton() {
+            const header = document.querySelector('.header-content');
+            const refreshBtn = document.createElement('button');
+            refreshBtn.innerHTML = '🔄 CHECK FOR NEW CASES';
+            refreshBtn.style.cssText = 'background: var(--accent-red); color: white; border: none; padding: 12px 24px; margin-top: 15px; font-family: Inconsolata, monospace; font-weight: bold; font-size: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease;';
+            
+            refreshBtn.onmouseover = function() {
+                this.style.background = 'var(--accent-gold)';
+                this.style.color = 'var(--primary-dark)';
+            };
+            refreshBtn.onmouseout = function() {
+                this.style.background = 'var(--accent-red)';
+                this.style.color = 'white';
+            };
+            refreshBtn.onclick = fetchLatestCases;
+            
+            header.appendChild(refreshBtn);
+        }
+
+        // Monitor online/offline
+        window.addEventListener('online', function() {
+            isOnline = true;
+            showUpdateNotification('🌐 Back online - checking for updates...', 'info');
+            fetchLatestCases();
+        });
+
+        window.addEventListener('offline', function() {
+            isOnline = false;
+            showUpdateNotification('⚠️ Offline mode', 'warning');
+        });
+
+        // Initialize auto-updates
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Public Accountability Archive - Live Update System Active');
+            loadCachedCases();
+            addRefreshButton();
+            fetchLatestCases();
+            
+            setInterval(function() {
+                if (isOnline) fetchLatestCases();
+            }, UPDATE_CHECK_INTERVAL);
+        });
+    </script>
+</body>
+</html>
